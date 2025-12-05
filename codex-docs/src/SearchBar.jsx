@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { docsData } from './docsData.js';
 import { createSectionId } from './sectionId.js';
 
-export default function SearchBar({ value, onChange }) {
+export default function SearchBar({ value, onChange, sticky = false }) {
   const query = value.trim().toLowerCase();
 
   const handleSelect = () => {
@@ -41,7 +41,12 @@ export default function SearchBar({ value, onChange }) {
 
   return (
     <div className="w-full max-w-2xl relative">
-      <label className="relative block">
+      <div
+        className={[
+          'relative block',
+          sticky ? 'sticky top-0 z-30' : '',
+        ].join(' ')}
+      >
         <span className="pointer-events-none absolute inset-y-0 left-3 flex items-center text-slate-400">
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -65,7 +70,7 @@ export default function SearchBar({ value, onChange }) {
           placeholder="搜索文档..."
           className="w-full rounded-xl border border-slate-200 bg-white/90 px-10 py-2.5 text-sm text-slate-900 shadow-sm focus:border-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-500/40 transition"
         />
-      </label>
+      </div>
 
       {query && hasResults && (
         <div className="absolute z-30 mt-2 w-full rounded-xl border border-slate-200 bg-white shadow-lg divide-y divide-slate-100 max-h-80 overflow-auto">
