@@ -21,6 +21,8 @@ export default function Home({ searchQuery, searchResults }) {
               可以从 <span className="underline">{firstDoc.title}</span> 开始阅读。
             </div>
           )}
+          <h3 className="text-2xl font-bold text-slate-800 mb-2">要是遇到用不了、登不上的情况，基本都是网络的不行！换个 WiFi、换个 VPN，或者用无痕浏览 / 换个浏览器试试，80% 的问题都能搞定。</h3>
+          <p>实在搞不定的话，就到群里问问：''</p>
         </>
       )}
 
