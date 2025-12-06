@@ -48,6 +48,14 @@ export const docsData = [
       {
         "heading": "Q29: Unable to persist auth file: 当文件已存在时，无法创建该文件。(os error 183)",
         "content": "可能原因：\n- Codex 写登录凭证时，目标位置被错误的同名文件/目录占用（~/.codex/auth.json 或 %USERPROFILE%\\.codex\\auth.json）。\n- 旧版 Codex 或其他工具留下了坏掉的 .codex（被建成了文件，或 auth 文件类型/内容不对）。\n\n排查/解决步骤：\n1) 定位 .codex：在 C:\\Users\\<用户名> 查看 .codex，确认它是文件夹而不是文件；若是文件夹，检查里面是否有异常 auth 文件。\n2) 备份并清理：将现有 .codex 改名为 .codex.bak（或复制备份），然后新建一个干净的 .codex 文件夹。\n3) 重新登录：重新运行 Codex CLI 或 VSCode 插件登录，让 Codex 自动在新的 .codex 里生成 auth.json；若仍报错，检查对 .codex 的写权限、关闭杀毒/安全工具后重试，必要时删除 .codex 目录、重启再试。\n\n建议准备的信息（求助时）：\n- 报错完整截图（含 “Unable to persist auth file”/os error 183）。\n- 系统版本（Windows 10/11）、Codex 版本。\n- 用户目录下 .codex 的当前结构截图（是文件还是目录、内部文件列表）。"
+      },
+      {
+        "heading": "Q30: 使用 codex 选择 “Sign in with ChatGPT” 登录时，浏览器跳转到 http://localhost:1455/auth/callback 提示 ERR_CONNECTION_REFUSED",
+        "content": "可能原因：\n- 本地回调端口 1455 未成功监听：Windows 上端口可能被 WinNAT/Hyper-V/VPN 占用或被标记为排除端口，codex 无法绑定，浏览器回调时连接被拒绝。\n- codex 不在当前本机监听（WSL/远程场景）：codex 在 WSL/远程机上监听 1455，但浏览器在本机打开，访问的是本机 localhost，因而拒绝。\n\n排查/解决步骤：\n \nStep 1 确认环境：是在本机 Windows 跑 codex，还是 WSL/远程/VS Code Remote/Codespaces 中运行。\nStep 2（本机 Windows）检查端口排除：管理员 CMD 运行\n\nnetsh interface ipv4 show excludedportrange protocol=tcp\n\n查看是否有覆盖 1455 的范围。\nStep 3 修复端口排除：管理员 CMD 依次执行\n\nnet stop winnat\nnet stop hns\nnet stop vmms  (若启用 Hyper-V)\nnet start hns\nnet start winnat\nnet start vmms\n\n再查排除范围，确保 1455 不被排除，重启 codex 登录。\nStep 4（WSL/远程）做 1455 端口转发：本机 SSH 加 -L 1455:localhost:1455 连接远程/WSL，在该会话运行 codex，浏览器用终端打印的回调链接。\nStep 5 若仍失败：检查防火墙/安全软件是否拦截 1455；关注终端是否有 “failed to bind 127.0.0.1:1455 / os error 10013” 等报错，收集终端输出与浏览器错误截图提交支持/社区。\n\n归档：登录与工作区切换相关问题 → Codex CLI 登录时本地回调端口 1455 连接被拒绝。"
+      },
+      {
+        "heading": "Q31: ChatGPT / Codex 登录或使用过程中提示 “Invalid session. Please start over.”",
+        "content": "可能原因：\n- 登录会话已失效或被服务器判定为无效：登录停留时间过长、在多个标签/设备来回切换、浏览器异常退出，导致当前 session token 过期或不匹配，服务端返回 Invalid session / session has expired。\n- 浏览器 Cookie / 本地缓存异常：更换浏览器、频繁清理数据、安装改写请求的扩展（隐私/广告插件、某些密码管理器），可能打乱登录流程，让 OpenAI 认为是非法会话。\n- 网络 / IP 环境不稳定或频繁切换：切换 Wi-Fi/蜂窝、开关 VPN、网络抖动，环境变化过大也会触发重新登录。\n\n排查/解决步骤：\n1) 简单重试：点击页面“重试”或刷新；若在 Codex 登录中，关闭当前授权页，回到 CLI 再重新执行 codex 登录。\n2) 完整重登：新开无痕/隐私窗口，手动输入 https://chatgpt.com 重新登录；成功后回到 Codex/插件授权。\n3) 清理站点数据：在浏览器隐私与安全里，仅清除 chatgpt.com、openai.com、auth.openai.com 的 Cookie 和缓存；关闭浏览器再重开登录。\n4) 更换浏览器或设备：若 Chrome 异常，换 Edge/Firefox/Safari；也可在手机或另一台电脑测试，若正常说明本地浏览器环境有问题。\n5) 检查网络与 VPN/代理：登录全程尽量使用同一网络；避免登录途中切换 Wi-Fi↔5G；有 VPN/代理先关闭再试，或更换网络（如从公司网换手机热点）。\n6) 若多次仍不行：等待几分钟再试；仍失败则截图错误页（含 “Invalid session. Please start over.”），记录浏览器/系统/网络环境，通过 OpenAI 帮助中心提交工单。\n\n归档：登录与工作区切换相关问题 / 网络与环境（浏览器 Session 失效）。"
       }
     ]
   },
